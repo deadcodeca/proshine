@@ -321,6 +321,10 @@ namespace PROBot.Scripting
             _lua.Globals["logToFile"] = new Action<string, DynValue, bool>(LogToFile);
             _lua.Globals["readLinesFromFile"] = new Func<string, string[]>(ReadLinesFromFile);
 
+            // Pokedex Actions
+            _lua.Globals["isPokemonCaught"] = new Func<DynValue, bool>(IsPokemonCaught);
+            _lua.Globals["isPokemonSeen"] = new Func<DynValue, bool>(IsPokemonSeen);
+
             foreach (string content in _libsContent)
             {
                 CallContent(content);
@@ -2765,6 +2769,24 @@ namespace PROBot.Scripting
             }
 
             Bot.TextOptions[index].Description = content;
+        }
+
+        // API: Returns the caught status of the specified Pokemon name or ID
+        private bool IsPokemonCaught(DynValue pokemon)
+        {
+            if (pokemon.Type == DataType.String)
+                pokemon = DynValue.NewNumber(PokemonNamesManager.Instance.IDs[pokemon.CastToString().ToUpperInvariant()]);
+
+            return Bot.Game.IsPokemonCaught((int)pokemon.CastToNumber());
+        }
+
+        // API: Returns the seen status of the specified Pokemon name or ID
+        private bool IsPokemonSeen(DynValue pokemon)
+        {
+            if (pokemon.Type == DataType.String)
+                pokemon = DynValue.NewNumber(PokemonNamesManager.Instance.IDs[pokemon.CastToString().ToUpperInvariant()]);
+
+            return Bot.Game.IsPokemonSeen((int)pokemon.CastToNumber());
         }
     }
 }
