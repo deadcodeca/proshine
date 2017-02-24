@@ -39,6 +39,7 @@ namespace PROProtocol
         public string PokemonTime { get; private set; }
         public string Weather { get; private set; }
         public int PCGreatestUid { get; private set; }
+        public Dictionary<int, int> Pokedex { get; private set; }
 
         public bool IsScriptActive { get; private set; }
         public string ScriptId { get; private set; }
@@ -177,6 +178,7 @@ namespace PROProtocol
             Players = new Dictionary<string, PlayerInfos>();
             PCGreatestUid = -1;
             IsPrivateMessageOn = true;
+            Pokedex = new Dictionary<int, int>();
         }
 
         public void Open()
@@ -488,6 +490,11 @@ namespace PROProtocol
             SendPacket("M|.|" + box + "|.|" + search);
         }
 
+        private void SendOpenPokedex()
+        {
+            SendPacket("p|.|l|0");
+        }
+
         private void SendReleasePokemon(int pokemonUid)
         {
             SendMessage("/release " + pokemonUid);
@@ -527,6 +534,22 @@ namespace PROProtocol
         {
             SendPrivateMessageAway();
             return true;
+        }
+
+        public bool IsPokemonCaught(int id)
+        {
+            if (Pokedex.ContainsKey(id))
+                return Pokedex[id] == 2;
+
+            return false;
+        }
+
+        public bool IsPokemonSeen(int id)
+        {
+            if (Pokedex.ContainsKey(id))
+                return Pokedex[id] == 1 || Pokedex[id] == 2;
+
+            return false;
         }
 
         public bool ReleasePokemonFromPC(int boxId, int boxPokemonId)
@@ -1104,6 +1127,9 @@ namespace PROProtocol
                 case "m":
                     OnPCBox(data);
                     break;
+                case "p":
+                    OnUpdatePokedex(data);
+                    break;
                 default:
 #if DEBUG
                     Console.WriteLine(" ^ unhandled /!\\");
@@ -1130,6 +1156,9 @@ namespace PROProtocol
 
             Console.WriteLine("[Login] Authenticated successfully");
             LoggedIn?.Invoke();
+
+            // Refresh Pokedex Data
+            SendOpenPokedex();
         }
 
         private void OnAuthenticationResult(string[] data)
@@ -1384,6 +1413,9 @@ namespace PROProtocol
                 IsInBattle = false;
                 ActiveBattle = null;
                 BattleEnded?.Invoke();
+
+                // Refresh Pokedex Data
+                SendOpenPokedex();
             }
         }
 
@@ -1840,6 +1872,18 @@ namespace PROProtocol
             }
             CurrentPCBox = pokemonBox;
             PCBoxUpdated?.Invoke(CurrentPCBox);
+        }
+        
+        private void OnUpdatePokedex(string[] data)
+        {
+            string[] entries = data[1].Substring(4).Split(new char[] { '<', '>' });
+
+            for (int i = 0; i < entries.Length; i += 2)
+            {
+                int key = Convert.ToInt32(entries[i]);
+                int value = Convert.ToInt32(entries[i + 1]);
+                Pokedex[key] = value;
+            }
         }
 
         private void LoadMap(string mapName)
