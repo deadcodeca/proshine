@@ -2775,7 +2775,17 @@ namespace PROBot.Scripting
         private bool IsPokemonCaught(DynValue pokemon)
         {
             if (pokemon.Type == DataType.String)
-                pokemon = DynValue.NewNumber(PokemonNamesManager.Instance.IDs[pokemon.CastToString().ToUpperInvariant()]);
+            {
+                string name = pokemon.CastToString();
+
+                if (!PokemonNamesManager.Instance.IDs.ContainsKey(name.ToUpperInvariant()))
+                {
+                    Fatal($"error: isPokemonCaught: the Pokemon '{name}' does not exist.");
+                    return false;
+                }
+                
+                pokemon = DynValue.NewNumber(PokemonNamesManager.Instance.IDs[name.ToUpperInvariant()]);
+            }
 
             return Bot.Game.IsPokemonCaught((int)pokemon.CastToNumber());
         }
@@ -2784,7 +2794,17 @@ namespace PROBot.Scripting
         private bool IsPokemonSeen(DynValue pokemon)
         {
             if (pokemon.Type == DataType.String)
-                pokemon = DynValue.NewNumber(PokemonNamesManager.Instance.IDs[pokemon.CastToString().ToUpperInvariant()]);
+            {
+                string name = pokemon.CastToString();
+
+                if (!PokemonNamesManager.Instance.IDs.ContainsKey(name.ToUpperInvariant()))
+                {
+                    Fatal($"error: isPokemonSeen: the Pokemon '{name}' does not exist.");
+                    return false;
+                }
+
+                pokemon = DynValue.NewNumber(PokemonNamesManager.Instance.IDs[name.ToUpperInvariant()]);
+            }
 
             return Bot.Game.IsPokemonSeen((int)pokemon.CastToNumber());
         }
