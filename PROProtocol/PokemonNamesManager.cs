@@ -1570,7 +1570,10 @@ namespace PROProtocol
             IDs["PRIMAL KYOGRE"] = 770;
             IDs["PRIMAL GROUDON"] = 771;
             IDs["SOMEPOKE"] = 772;
-            IDs["MEWTWO"] = 773;
+            
+            // Duplicate:
+            // IDs["MEWTWO"] = 773;
+            
             IDs["CRYSTAL ONIX"] = 774;
             IDs["XD001"] = 775;
         }
