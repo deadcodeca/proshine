@@ -1,4 +1,6 @@
-﻿namespace PROProtocol
+﻿using System.Collections.Generic;
+
+namespace PROProtocol
 {
     public class PokemonNamesManager
     {
