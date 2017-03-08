@@ -1,6 +1,8 @@
 # PROShine
 
-A free, open-source and advanced bot for Pokémon Revolution Online.
+A free, open-source and advanced bot for Pokémon Revolution Online. Modified by deadcode.ca
+
+Link to site: https://deadcode.ca/proshine
 
 Community: https://proshine-bot.com/
 
